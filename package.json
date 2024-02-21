@@ -1,0 +1,13 @@
+{
+  "name": "dynamic-bible",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Michael White",
+  "scripts": {
+    "client": "npm run dev -w=products/dynamic-bible-client",
+    "server": "npm run dev -w=products/dynamic-bible-server"
+  },
+  "workspaces": [
+    "products/dynamic-bible-*"
+  ]
+}
