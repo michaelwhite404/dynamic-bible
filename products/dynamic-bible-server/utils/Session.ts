@@ -26,6 +26,7 @@ export default class Session {
   addViewer(viewer: Socket) {
     this.viewers.push(viewer);
     viewer.data.viewerSession = this;
+    viewer.emit("viewer-added", { pin: this.pin });
   }
 
   removeViewer(viewer: Socket) {
