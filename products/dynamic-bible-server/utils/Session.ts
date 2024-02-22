@@ -1,5 +1,11 @@
 import { Socket } from "socket.io";
 
+interface FormattedSession {
+  pin: string;
+  host: string;
+  viewers: string[];
+}
+
 export default class Session {
   readonly pin: string;
   private host: Socket;
@@ -8,7 +14,9 @@ export default class Session {
     this.pin = pin;
     this.host = host;
     this.viewers = [];
-    // this.host.join(this.pin);
+    this.host.join(this.pin);
+    this.host.emit("session-created", { pin });
+    this.host.data.hostSession = this;
   }
 
   /**
@@ -19,7 +27,13 @@ export default class Session {
     this.viewers.push(viewer);
   }
 
-  endSession() {}
+  formatSession(): FormattedSession {
+    return {
+      pin: this.pin,
+      host: this.host.id,
+      viewers: this.viewers.map((viewer) => viewer.id),
+    };
+  }
 }
 
 // const sess = new Session({ pin: "123" });

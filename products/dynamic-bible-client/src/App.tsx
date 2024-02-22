@@ -2,9 +2,14 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import { useSocket } from "./hooks/useSocket";
+import { useEffect } from "react";
 
 function App() {
   const socket = useSocket();
+
+  useEffect(() => {
+    // socket?.on("session-created", ({ pin }) => console.log(pin));
+  }, [socket]);
 
   return (
     <>
@@ -18,7 +23,7 @@ function App() {
       </div>
       <h1>Create a new room</h1>
       <div className="card">
-        <button onClick={() => socket.emit("pressed", socket.id)}>Press Me</button>
+        <button onClick={() => socket.emit("create-session", socket.id)}>Press Me</button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
