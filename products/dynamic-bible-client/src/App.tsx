@@ -2,9 +2,10 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import { useSocket } from "./hooks/useSocket";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
+  const [pin, setPin] = useState("");
   const socket = useSocket();
 
   useEffect(() => {
@@ -23,12 +24,14 @@ function App() {
       </div>
       <h1>Create a new room</h1>
       <div className="card">
-        <button onClick={() => socket.emit("create-session", socket.id)}>Press Me</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <div>
+          <button onClick={() => socket.emit("create-session", socket.id)}>Host Session</button>
+        </div>
+        <input value={pin} onChange={(e) => setPin(e.target.value)} />
+        <button disabled={pin.length === 0} onClick={() => socket.emit("view-session", pin)}>
+          View Session
+        </button>
       </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
     </>
   );
 }

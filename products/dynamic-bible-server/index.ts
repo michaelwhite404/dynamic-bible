@@ -8,17 +8,20 @@ import LiveSessions from "./utils/LiveSessions";
 import Session from "./utils/Session";
 
 interface ServerToClientEvents {
-  "session-created": () => {};
+  "session-created": () => void;
+  "no-session-found": () => void;
 }
 
 interface ClientToServerEvents {
   "create-session": () => void;
+  "view-session": (pin: string) => void;
 }
 
 interface InterServerEvents {}
 
 interface SocketData {
   hostSession?: Session;
+  viewerSession?: Session;
 }
 
 const liveSessions = new LiveSessions();
@@ -71,9 +74,20 @@ io.on("connection", (socket) => {
     liveSessions.createSession(uid.rnd().toString(), socket);
   });
 
+  socket.on("view-session", (pin) => {
+    liveSessions.getSession(pin)?.addViewer(socket);
+  });
+
   socket.on("disconnecting", () => {
-    const pin = socket.data.hostSession?.pin;
-    if (pin) liveSessions.endSession(pin);
+    const hostPin = socket.data.hostSession?.pin;
+    // Rethink this
+    if (hostPin) {
+      liveSessions.endSession(hostPin);
+      return;
+    }
+
+    const viewerSession = socket.data.viewerSession;
+    if (viewerSession) viewerSession.removeViewer(socket);
   });
 
   socket.on("disconnect", () => {

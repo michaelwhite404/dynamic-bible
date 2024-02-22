@@ -25,6 +25,11 @@ export default class Session {
    */
   addViewer(viewer: Socket) {
     this.viewers.push(viewer);
+    viewer.data.viewerSession = this;
+  }
+
+  removeViewer(viewer: Socket) {
+    this.viewers = this.viewers.filter((currViewer) => currViewer.id !== viewer.id);
   }
 
   formatSession(): FormattedSession {
