@@ -17,9 +17,9 @@ export const Viewer = () => {
     state: { pin },
   } = useLocation();
 
-  // useEffect(() => {
-  //   socket.on("viewer-enter-session",);
-  // }, [])
+  useEffect(() => {
+    socket.emit("viewer-entered-session");
+  }, []);
 
   useEffect(() => {
     socket.on("show-passage", setPassage);

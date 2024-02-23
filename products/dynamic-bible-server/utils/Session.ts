@@ -47,7 +47,9 @@ export default class Session {
     };
   }
 
-  // getPassage(query: string) {}
+  getPassage(uid: string) {
+    return this.passages.find((passage) => passage.uid === uid);
+  }
 
   getPassages() {
     return this.passages;
@@ -60,11 +62,17 @@ export default class Session {
   }
 
   showPassageToViewers(uid: string) {
-    const passage = this.passages.find((passage) => passage.uid === uid);
+    const passage = this.getPassage(uid);
     if (passage && passage.valid) {
       this.currentPassage = passage.uid;
       this.host.broadcast.to(this.pin).emit("show-passage", passage.formatPassage());
     }
+  }
+
+  showPassageToViewer(viewer: Socket) {
+    if (!this.currentPassage) return;
+    const passage = this.getPassage(this.currentPassage)!;
+    viewer.emit("show-passage", passage.formatPassage());
   }
 
   hidePassageFromViewers() {
