@@ -6,6 +6,7 @@ import { Server } from "socket.io";
 import ShortUniqueId from "short-unique-id";
 import LiveSessions from "./utils/LiveSessions";
 import Session from "./utils/Session";
+import { PassageParams } from "./utils/Passage";
 
 interface ServerToClientEvents {
   "session-created": () => void;
@@ -15,6 +16,7 @@ interface ServerToClientEvents {
 interface ClientToServerEvents {
   "create-session": () => void;
   "view-session": (pin: string) => void;
+  "get-passage": (passageParams: PassageParams) => void;
 }
 
 interface InterServerEvents {}
@@ -41,7 +43,7 @@ export const io = new Server<
     methods: ["GET", "POST"],
   },
 });
-const uid = new ShortUniqueId({ length: 10 });
+const uid = new ShortUniqueId({ length: 10, dictionary: "number" });
 
 app.use(cors());
 
@@ -62,20 +64,25 @@ app.get("/sessions", (req, res) => {
 
 app.get("/rooms/:room", (req, res) => {
   const { room } = req.params;
-  res.status(200).json({ room: io.sockets.adapter.rooms.get(room)?.values().next() });
+  console.log(io.sockets.adapter.rooms.get(room));
+  res.status(200).json({});
 });
 
 io.on("connection", (socket) => {
   console.log(green`A user connected: ${socket.id}`);
 
   socket.on("create-session", () => {
-    const pin = uid.rnd().toString();
-    console.log(pin);
     liveSessions.createSession(uid.rnd().toString(), socket);
   });
 
   socket.on("view-session", (pin) => {
     liveSessions.getSession(pin)?.addViewer(socket);
+  });
+
+  socket.on("get-passage", (passageParams: PassageParams) => {
+    const session = liveSessions.getSession(socket.data.hostSession!)!;
+    const passage = session.addPassage(passageParams);
+    session.showPassageToViewers(passage.uid);
   });
 
   socket.on("disconnecting", () => {

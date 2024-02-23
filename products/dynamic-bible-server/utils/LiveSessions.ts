@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 import Session from "./Session";
-import { io } from "..";
+// import { io } from "..";
 
 export default class LiveSessions {
   private sessions: Session[];
@@ -18,7 +18,7 @@ export default class LiveSessions {
    */
   createSession(pin: string, host: Socket) {
     this.sessions.push(new Session({ pin, host }));
-    console.log(io.sockets.adapter.rooms.get(pin));
+    // console.log(io.sockets.adapter.rooms.get(pin));
   }
 
   /**
