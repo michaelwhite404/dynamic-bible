@@ -12,11 +12,13 @@ export default class Session {
   private host: Socket;
   private viewers: Socket[];
   private passages: Passage[];
+  private currentPassage: string | undefined;
   constructor({ pin, host }: { pin: string; host: Socket }) {
     this.pin = pin;
     this.host = host;
     this.viewers = [];
     this.passages = [];
+    this.currentPassage = undefined;
     this.host.join(this.pin);
     this.host.emit("session-created", { pin });
     this.host.data.hostSession = this;
@@ -60,7 +62,15 @@ export default class Session {
   showPassageToViewers(uid: string) {
     const passage = this.passages.find((passage) => passage.uid === uid);
     if (passage && passage.valid) {
+      this.currentPassage = passage.uid;
       this.host.broadcast.to(this.pin).emit("show-passage", passage.formatPassage());
+    }
+  }
+
+  hidePassageFromViewers() {
+    if (this.currentPassage) {
+      this.currentPassage = undefined;
+      this.host.broadcast.to(this.pin).emit("hide-passage");
     }
   }
 }

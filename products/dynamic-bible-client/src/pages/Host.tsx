@@ -15,13 +15,14 @@ export const Host = () => {
                 translation: "kjv",
                 book: "Proverbs",
                 chapter: 3,
-                verse: "1-5",
+                verse: "1-3",
               })
             }
           >
-            Emit verse
+            Emit passage
           </button>
         </div>
+        <button onClick={() => socket.emit("hide-passage")}>Hide passage</button>
       </div>
     </div>
   );

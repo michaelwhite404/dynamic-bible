@@ -17,6 +17,7 @@ interface ClientToServerEvents {
   "create-session": () => void;
   "view-session": (pin: string) => void;
   "get-passage": (passageParams: PassageParams) => void;
+  "hide-passage": () => void;
 }
 
 interface InterServerEvents {}
@@ -83,6 +84,11 @@ io.on("connection", (socket) => {
     const session = liveSessions.getSession(socket.data.hostSession!)!;
     const passage = session.addPassage(passageParams);
     session.showPassageToViewers(passage.uid);
+  });
+
+  socket.on("hide-passage", () => {
+    const session = liveSessions.getSession(socket.data.hostSession!)!;
+    session.hidePassageFromViewers();
   });
 
   socket.on("disconnecting", () => {
